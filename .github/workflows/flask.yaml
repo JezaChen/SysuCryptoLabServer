@@ -34,3 +34,15 @@ jobs:
 #      run: |
 #        cd flask
 #        bash test.sh
+
+    # 遠端部署
+    - name: CD
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        USERNAME: ${{ secrets.USERNAME }}
+        KEY: ${{ secrets.SSHKEY }}
+        script: |
+          cd /home/lighthouse
+          git pull https://github.com/JezaChen/SysuCryptoLabServer.git
+          docker-compose up --build -d

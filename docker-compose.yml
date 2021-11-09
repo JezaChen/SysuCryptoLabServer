@@ -1,0 +1,10 @@
+# For local development
+web:
+  build: .
+  dockerfile: Dockerfile
+  links:
+    - redis
+  ports:
+    - "7788"
+redis:
+  image: redis
