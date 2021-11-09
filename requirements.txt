@@ -2,3 +2,4 @@ Flask
 redis
 PyYAML
 pytest
+sympy
