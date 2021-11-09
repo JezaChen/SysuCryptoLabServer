@@ -5,6 +5,6 @@ web:
   links:
     - redis
   ports:
-    - "7788"
+    - "5000:7788"
 redis:
   image: redis
