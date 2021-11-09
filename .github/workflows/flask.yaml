@@ -43,6 +43,6 @@ jobs:
         USERNAME: ${{ secrets.USERNAME }}
         KEY: ${{ secrets.SSHKEY }}
         script: |
-          cd /home/lighthouse
+          cd /home/lighthouse/SysuCryptoLabServer
           git pull https://github.com/JezaChen/SysuCryptoLabServer.git
           docker-compose up --build -d
