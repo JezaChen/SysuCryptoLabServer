@@ -1,7 +1,8 @@
 import sympy
-from flask import request, abort
+from flask import request, abort, jsonify
 
 from . import main
+from .tools import hex_to_dec_int, hex2
 
 
 @main.route('/crypto/next_prime')
@@ -23,3 +24,53 @@ def get_next_prime():
         return str(rslt)
     except TypeError:
         return "Bad Request", 400
+
+
+@main.route('/crypto/calculate_inverse')
+def calculate_inverse():
+    """
+    求解num的模mod逆元
+    参数 json
+    - num: 十进制表示/十六进制表示的数字
+    - is_num_dec: num是否是十进制表示的数字, 默认False
+
+    - mod: 模，十进制表示/十六进制表示的数字
+    - is_mod_dec: 默认False
+    返回 json
+    - result_dec: 结果的十进制表示法
+    - result_hex: 结果的十六进制表示法
+    - success: 是否成功
+    - reason: 如果不成功, 返回理由
+    :return:
+    """
+    num_str = request.args.get("num")
+    is_num_dec = request.args.get("is_num_dec", False)
+    mod_str = request.args.get("mod")
+    is_mod_dec = request.args.get("is_mod_dec", False)
+
+    if num_str is None or mod_str is None:
+        abort(400)
+
+    # 统一为处理num为int
+    if is_num_dec:
+        if not num_str.isdigit():
+            return "argument num must be a number", 400
+        num = int(num_str)
+    else:  # hex
+        num = hex_to_dec_int(num_str)
+
+    # 统一为处理mod为int
+    if is_mod_dec:
+        if not mod_str.isdigit():
+            return "argument mod must be a number", 400
+        mod = int(mod_str)
+    else:  # hex
+        mod = hex_to_dec_int(mod_str)
+
+    try:
+        result = pow(num, -1, mod)
+        result_dec = str(result)
+        result_hex = hex2(result)
+        return jsonify(success=True, result_dec=result_dec, result_hex=result_hex)
+    except ValueError:
+        return jsonify(success=False, reason="{}在模{}下没有逆元".format(num, mod))

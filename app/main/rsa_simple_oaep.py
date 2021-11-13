@@ -11,8 +11,6 @@ def g(input_str: bytes):
 
 
 def oaep_encode(input_bytes: bytes, r_bytes: bytes) -> bytes:
-    print("OAEP -- Encode")
-
     if len(input_bytes) != 128 or len(r_bytes) != 128:
         raise ValueError("Length of input_bytes or r is not 128!")
 
@@ -25,18 +23,13 @@ def oaep_encode(input_bytes: bytes, r_bytes: bytes) -> bytes:
     y_int = r_int ^ int.from_bytes(g(x_bytes), byteorder="big")
     y_bytes = y_int.to_bytes(128, "big")
 
-    print("x_bytes:{}\ny_bytes:{}".format(x_bytes, y_bytes))
-
     return x_bytes + y_bytes
 
 
 def oaep_decode(input_bytes: bytes) -> (bytes, bytes):
-    print("OAEP -- Decode")
-
     if len(input_bytes) != 256:
         raise ValueError("Length of input_bytes is not 256!")
     x_bytes, y_bytes = input_bytes[:128], input_bytes[128:]
-    print("x_bytes:{}\ny_bytes:{}".format(x_bytes, y_bytes))
 
     x_int = int.from_bytes(x_bytes, "big")
     y_int = int.from_bytes(y_bytes, "big")
@@ -55,19 +48,14 @@ def RSAOAEPEnc(m: bytes, n: int, e: int, r: bytes = None):
     m = b'\x00' * (128 - len(m)) + m  # pad
     encoded_msg = oaep_encode(m, r)
     encoded_msg_int = int.from_bytes(encoded_msg, "big")
-    print("enc: m_int: {}".format(encoded_msg_int))
-    print("bytes of m: {}".format(len(bytes.fromhex(hex2(encoded_msg_int)[2:]))))
-    print(encoded_msg_int >= n)
+
     c_int = RSAEnc(encoded_msg_int, n, e)
-    print("enc: c_int: {}".format(c_int))
     return hex2(c_int)
 
 
 def RSAOAEPDec(c: bytes, n: int, d: int):
     c_int = int.from_bytes(c, "big")
-    print("dec: c_int: {}".format(c_int))
     plain_text_int = RSADec(c_int, n, d)
-    print("dec: m_int: {}".format(plain_text_int))
     plain_text_bytes = plain_text_int.to_bytes(256, "big")
     msg, r_bytes = oaep_decode(plain_text_bytes)
     return msg, r_bytes
