@@ -7,7 +7,21 @@ from .tools import hex_to_bytes, try_decode_utf8
 
 @main.route("/crypto/simple_oaep_encode")
 def simple_oaep_encode():
+    """
+    参数：json
+    - message: utf8/hex 字符串
+    - is_message_utf8: (可选) message是否为utf8编码，默认为False
+    - r: (可选) hex编码 字符串
+
+    返回：json
+    - success: 是否成功
+    - encoded_message: 编码后的信息，hex编码
+    - reason: 如果success=False, 失败的理由
+    :return:
+    """
     message = request.args.get("message")
+    is_message_utf8 = request.args.get("is_message_utf8", False)
+
     if message is None:
         abort(400)
 
@@ -22,9 +36,14 @@ def simple_oaep_encode():
     if len(r) != 128:
         return jsonify(success=False, reason="r的长度不等于128字节（1024bit）")
 
-    message_bytes = bytes(message, encoding="utf8")
-
-    if len(message_bytes) > 128:
+    # 检查message
+    if is_message_utf8:
+        message_bytes = bytes(message, encoding="utf8")
+    else:
+        message_bytes = hex_to_bytes(message)
+        if message_bytes is None:
+            return jsonify(success=False, reason="message解析错误，请检查message是否为合法的hex字符串")
+    if len(message_bytes) > 128:  # 检查message长度
         return jsonify(success=False, reason="消息长度不能大于128字节")
 
     message_bytes = b'\x00' * (128 - len(message_bytes)) + message_bytes  # pad
@@ -36,6 +55,18 @@ def simple_oaep_encode():
 
 @main.route("/crypto/simple_oaep_decode")
 def simple_oaep_decode():
+    """
+    参数：json
+    - encoded_message: 编码后的字符串，hex格式
+
+    返回：json
+    - success: 是否成功
+    - message_bytes: 解码后的信息，hex格式
+    - message_utf8: 解码后的字符串，utf-8格式
+    - r: hex格式
+    - reason: 如果success=False, 失败的理由
+    :return:
+    """
     encoded_message = request.args.get("encoded_message")
     if encoded_message is None:
         abort(400)
@@ -54,7 +85,7 @@ def simple_oaep_decode():
     # 尝试解析信息为utf8
     message_utf8 = try_decode_utf8(message_bytes)
 
-    response = jsonify(message_bytes=message_bytes.hex(), message_utf8=message_utf8, r=r_bytes.hex(), success=True)
+    response = jsonify(message_bytes="0x" + message_bytes.hex(), message_utf8=message_utf8, r="0x" + r_bytes.hex(), success=True)
     return response
 
 
@@ -62,7 +93,8 @@ def simple_oaep_decode():
 def rsa_simple_oaep_enc():
     """
     参数：json
-    - message: utf8 字符串
+    - message: utf8/hex 字符串
+    - is_message_utf8: (可选) message是否为utf8编码，默认为False
     - n: hex字符串
     - e: hex字符串
     - r: (可选) hex字符串
@@ -73,11 +105,12 @@ def rsa_simple_oaep_enc():
     - reason: 如果success=False, 失败的理由
     :return:
     """
-    message_hex = request.args.get("message")
+    message_str = request.args.get("message")
+    is_message_utf8 = request.args.get("is_message_utf8", False)
     n_hex = request.args.get("n")
     e_hex = request.args.get("e")
 
-    if message_hex is None or n_hex is None or e_hex is None:
+    if message_str is None or n_hex is None or e_hex is None:
         abort(400)
 
     r = request.args.get("r")
@@ -91,7 +124,13 @@ def rsa_simple_oaep_enc():
     if len(r) != 128:
         return jsonify(success=False, reason="r的长度不等于128字节（1024bit）")
 
-    message_bytes = bytes(message_hex, encoding="utf8")
+    # 处理message
+    if is_message_utf8:
+        message_bytes = bytes(message_str, encoding="utf8")
+    else:
+        message_bytes = hex_to_bytes(message_str)
+        if message_bytes is None:
+            return jsonify(success=False, reason="message解析错误，请检查message是否为合法的hex字符串")
     if len(message_bytes) > 128:
         return jsonify(success=False, reason="消息长度不能大于128字节")
 
@@ -170,4 +209,4 @@ def rsa_simple_oaep_dec():
     # 尝试解析信息为utf8
     message_utf8 = try_decode_utf8(message_bytes)
 
-    return jsonify(success=True, message_bytes=message_bytes.hex(), message_utf8=message_utf8, r=r_bytes.hex())
+    return jsonify(success=True, message_bytes="0x" + message_bytes.hex(), message_utf8=message_utf8, r="0x" + r_bytes.hex())

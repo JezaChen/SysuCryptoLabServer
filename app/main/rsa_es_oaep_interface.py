@@ -131,7 +131,7 @@ def eme_oaep_decode():
     # 尝试解析信息为utf8
     message_utf8 = try_decode_utf8(message_bytes)
 
-    response = jsonify(message_bytes=message_bytes.hex(), message_utf8=message_utf8, success=True)
+    response = jsonify(message_bytes="0x" + message_bytes.hex(), message_utf8=message_utf8, success=True)
     return response
 
 
@@ -301,4 +301,4 @@ def rsaes_oaep_dec():
         return jsonify(success=False, reason="解码失败，请检查参数")
     # 尝试解析信息为utf8
     message_utf8 = try_decode_utf8(message_bytes)
-    return jsonify(success=True, message_bytes=message_bytes.hex(), message_utf8=message_utf8)
+    return jsonify(success=True, message_bytes="0x" + message_bytes.hex(), message_utf8=message_utf8)
