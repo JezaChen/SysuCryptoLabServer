@@ -1,33 +1,13 @@
-import hashlib
 import os
+from .tools import bytes_xor, hex2
+from .rsa_raw import RSAEnc, RSADec
+from .mgf import mgf1
 
 
-def hex2(v):
-    s = hex(v)[2:]
-    return '0x' + s if len(s) % 2 == 0 else '0x0' + s
-
-
-def RSAEnc(m, n, e):
-    return pow(m, e, n)
-
-
-def RSADec(c, n, d):
-    return pow(c, d, n)
-
-
-def i2osp(integer: int, size: int = 4) -> bytes:
-    return b"".join([chr((integer >> (8 * i)) & 0xFF).encode() for i in reversed(range(size))])
-
-
-def mgf1(input_str: bytes, length: int, hash_func=hashlib.sha256) -> bytes:
-    """Mask generation function."""
-    counter = 0
-    output = b""
-    while len(output) < length:
-        C = i2osp(counter, 4)
-        output += hash_func(input_str + C).digest()
-        counter += 1
-    return output[:length]
+def g(input_str: bytes):
+    rslt = mgf1(input_str, 128)
+    first_byte = (rslt[0] & 63).to_bytes(1, "big")
+    return first_byte + rslt[1:]
 
 
 def oaep_encode(input_bytes: bytes, r_bytes: bytes) -> bytes:
@@ -39,10 +19,10 @@ def oaep_encode(input_bytes: bytes, r_bytes: bytes) -> bytes:
     m_int = int.from_bytes(input_bytes, byteorder="big")
     r_int = int.from_bytes(r_bytes, byteorder="big")
 
-    x_int = m_int ^ int.from_bytes(mgf1(r_bytes, 128), byteorder="big")
+    x_int = m_int ^ int.from_bytes(g(r_bytes), byteorder="big")
     x_bytes = x_int.to_bytes(128, "big")
 
-    y_int = r_int ^ int.from_bytes(mgf1(x_bytes, 128), byteorder="big")
+    y_int = r_int ^ int.from_bytes(g(x_bytes), byteorder="big")
     y_bytes = y_int.to_bytes(128, "big")
 
     print("x_bytes:{}\ny_bytes:{}".format(x_bytes, y_bytes))
@@ -60,9 +40,9 @@ def oaep_decode(input_bytes: bytes) -> (bytes, bytes):
 
     x_int = int.from_bytes(x_bytes, "big")
     y_int = int.from_bytes(y_bytes, "big")
-    r_int = int.from_bytes(mgf1(x_bytes, 128), byteorder="big") ^ y_int
+    r_int = int.from_bytes(g(x_bytes), byteorder="big") ^ y_int
     r_bytes = r_int.to_bytes(128, "big")
-    m_int = x_int ^ int.from_bytes(mgf1(r_bytes, 128), byteorder="big")
+    m_int = x_int ^ int.from_bytes(g(r_bytes), byteorder="big")
     m_bytes = m_int.to_bytes(128, "big")
     return m_bytes.lstrip(b'\x00'), r_bytes
 
@@ -92,24 +72,24 @@ def RSAOAEPDec(c: bytes, n: int, d: int):
     msg, r_bytes = oaep_decode(plain_text_bytes)
     return msg, r_bytes
 
+def test():
+    msg = b"Hello"
+    print("Message:\t", msg)
 
-msg = b"Hello"
-print("Message:\t", msg)
+    e = int("010001", 16)
+    p = 70370393959675521820500782129455829046834624191193040774778174186390861020432999560509479154049871458971941351584959609981703698259784491166467017313830811268279206174600595835094806956703023301214538079175799918922889270950498970147750593045730876854838583096128502835448395964315594558492757738078102448063
+    q = 138546997122076233229845236559079110806642277731618790000419567680695298567304830060061354017372881645373283309640996354308746527346324698910039969835699225730201932391098735680425536942180270112225329355005519944092453869875019638296668830952322651286967291745849935332582547395526139086212637793518775176423
 
-e = int("010001", 16)
-p = 70370393959675521820500782129455829046834624191193040774778174186390861020432999560509479154049871458971941351584959609981703698259784491166467017313830811268279206174600595835094806956703023301214538079175799918922889270950498970147750593045730876854838583096128502835448395964315594558492757738078102448063
-q = 138546997122076233229845236559079110806642277731618790000419567680695298567304830060061354017372881645373283309640996354308746527346324698910039969835699225730201932391098735680425536942180270112225329355005519944092453869875019638296668830952322651286967291745849935332582547395526139086212637793518775176423
+    n = p * q
 
-n = p * q
-print("bytes of n: {}".format(len(bytes.fromhex(hex2(n)[2:]))))
-phi_n = (p - 1) * (q - 1)
-d = pow(e, -1, phi_n)
+    phi_n = (p - 1) * (q - 1)
+    d = pow(e, -1, phi_n)
 
-print("e: {}".format(e))
-print("n: {}".format(n))
-print("d: {}".format(d))
 
-cipher_hex_str = RSAOAEPEnc(msg, n, e)
-cipher_bytes = bytes.fromhex(cipher_hex_str[2:])
-msg, r = RSAOAEPDec(cipher_bytes, n, d)
-print(msg)
+    cipher_hex_str = RSAOAEPEnc(msg, n, e)
+    cipher_bytes = bytes.fromhex(cipher_hex_str[2:])
+    msg, r = RSAOAEPDec(cipher_bytes, n, d)
+
+    print(hex2(n))
+    print(hex2(e))
+    print(hex2(d))
