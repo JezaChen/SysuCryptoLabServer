@@ -28,9 +28,9 @@ def eme_oaep_encode():
     message = request.args.get("message")
     if message is None:
         abort(400)
-    is_message_utf8 = request.args.get("is_message_utf8", False)
+    is_message_utf8 = request.args.get("is_message_utf8", "0")
     label = request.args.get("label")
-    is_label_utf8 = request.args.get("is_label_utf8", False)
+    is_label_utf8 = request.args.get("is_label_utf8", "0")
     hash_func_name = request.args.get("hash", "sha256")
     mgf1_hash_func_name = request.args.get("mgf1_hash", "sha256")
 
@@ -40,7 +40,7 @@ def eme_oaep_encode():
         return jsonify(success=False, reason="哈希函数指定错误，请检查参数hash以及mgf1_hash")
 
     # 检查message
-    if is_message_utf8:
+    if is_message_utf8 == "1":
         message_bytes = bytes(message, encoding="utf8")
     else:
         message_bytes = hex_to_bytes(message)
@@ -51,7 +51,7 @@ def eme_oaep_encode():
         return jsonify(success=False, reason="消息过长")
 
     if label:
-        if is_label_utf8:
+        if is_label_utf8 == "1":
             label_bytes = bytes(label, encoding="utf8")
         else:
             label_bytes = hex_to_bytes(label)
@@ -94,7 +94,7 @@ def eme_oaep_decode():
         abort(400)
 
     label = request.args.get("label")
-    is_label_utf8 = request.args.get("is_label_utf8", False)
+    is_label_utf8 = request.args.get("is_label_utf8", "0")
 
     hash_func_name = request.args.get("hash", "sha256")
     mgf1_hash_func_name = request.args.get("mgf1_hash", "sha256")
@@ -112,7 +112,7 @@ def eme_oaep_decode():
         return jsonify(success=False, reason="哈希函数指定错误，请检查参数hash以及mgf1_hash")
 
     if label:
-        if is_label_utf8:
+        if is_label_utf8 == "1":
             label_bytes = bytes(label, encoding="utf8")
         else:
             label_bytes = hex_to_bytes(label)
@@ -156,11 +156,11 @@ def rsaes_oaep_enc():
     :return:
     """
     message_str = request.args.get("message")
-    is_message_utf8 = request.args.get("is_message_utf8", False)
+    is_message_utf8 = request.args.get("is_message_utf8", "0")
     n_hex = request.args.get("n")
     e_hex = request.args.get("e")
     label_str = request.args.get("label")
-    is_label_utf8 = request.args.get("is_label_utf8", False)
+    is_label_utf8 = request.args.get("is_label_utf8", "0")
 
     hash_func_name = request.args.get("hash", "sha256")
     mgf1_hash_func_name = request.args.get("mgf1_hash", "sha256")
@@ -174,7 +174,7 @@ def rsaes_oaep_enc():
         abort(400)
 
     # 处理message
-    if is_message_utf8:
+    if is_message_utf8 == "1":
         message_bytes = bytes(message_str, encoding="utf8")
     else:
         message_bytes = hex_to_bytes(message_str)
@@ -186,7 +186,7 @@ def rsaes_oaep_enc():
 
     # 处理label
     if label_str:
-        if is_label_utf8:
+        if is_label_utf8 == "1":
             label_bytes = bytes(label_str, encoding="utf8")
         else:
             label_bytes = hex_to_bytes(label_str)
@@ -242,7 +242,7 @@ def rsaes_oaep_dec():
     n_hex = request.args.get("n")
     d_hex = request.args.get("d")
     label_str = request.args.get("label")
-    is_label_utf8 = request.args.get("is_label_utf8", False)
+    is_label_utf8 = request.args.get("is_label_utf8", "0")
 
     hash_func_name = request.args.get("hash", "sha256")
     mgf1_hash_func_name = request.args.get("mgf1_hash", "sha256")
@@ -265,7 +265,7 @@ def rsaes_oaep_dec():
 
     # 处理label
     if label_str:
-        if is_label_utf8:
+        if is_label_utf8 == "1":
             label_bytes = bytes(label_str, encoding="utf8")
         else:
             label_bytes = hex_to_bytes(label_str)

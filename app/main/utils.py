@@ -45,15 +45,15 @@ def calculate_inverse():
     :return:
     """
     num_str = request.args.get("num")
-    is_num_dec = request.args.get("is_num_dec", False)
+    is_num_dec = request.args.get("is_num_dec", "0")
     mod_str = request.args.get("mod")
-    is_mod_dec = request.args.get("is_mod_dec", False)
+    is_mod_dec = request.args.get("is_mod_dec", "0")
 
     if num_str is None or mod_str is None:
         abort(400)
 
     # 统一为处理num为int
-    if is_num_dec:
+    if is_num_dec == "1":
         if not num_str.isdigit():
             return "argument num must be a number", 400
         num = int(num_str)
@@ -61,7 +61,7 @@ def calculate_inverse():
         num = hex_to_dec_int(num_str)
 
     # 统一为处理mod为int
-    if is_mod_dec:
+    if is_mod_dec == "1":
         if not mod_str.isdigit():
             return "argument mod must be a number", 400
         mod = int(mod_str)

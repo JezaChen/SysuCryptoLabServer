@@ -20,7 +20,7 @@ def simple_oaep_encode():
     :return:
     """
     message = request.args.get("message")
-    is_message_utf8 = request.args.get("is_message_utf8", False)
+    is_message_utf8 = request.args.get("is_message_utf8", "0")
 
     if message is None:
         abort(400)
@@ -37,7 +37,7 @@ def simple_oaep_encode():
         return jsonify(success=False, reason="r的长度不等于128字节（1024bit）")
 
     # 检查message
-    if is_message_utf8:
+    if is_message_utf8 == "1":
         message_bytes = bytes(message, encoding="utf8")
     else:
         message_bytes = hex_to_bytes(message)
@@ -106,7 +106,7 @@ def rsa_simple_oaep_enc():
     :return:
     """
     message_str = request.args.get("message")
-    is_message_utf8 = request.args.get("is_message_utf8", False)
+    is_message_utf8 = request.args.get("is_message_utf8", "0")
     n_hex = request.args.get("n")
     e_hex = request.args.get("e")
 
@@ -125,7 +125,7 @@ def rsa_simple_oaep_enc():
         return jsonify(success=False, reason="r的长度不等于128字节（1024bit）")
 
     # 处理message
-    if is_message_utf8:
+    if is_message_utf8 == "1":
         message_bytes = bytes(message_str, encoding="utf8")
     else:
         message_bytes = hex_to_bytes(message_str)
