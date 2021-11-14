@@ -7,4 +7,4 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN pip install -r requirements.txt
-CMD ["python", "main.py"]
+CMD gunicorn --workers=4 -b 0.0.0.0:5000 wsgi:app
