@@ -6,8 +6,7 @@ from .mgf import mgf1
 
 def g(input_str: bytes):
     rslt = mgf1(input_str, 128)
-    first_byte = (rslt[0] & 63).to_bytes(1, "big")
-    return first_byte + rslt[1:]
+    return b"\x00\x00" + rslt[2:]  # 将前两个字节置0
 
 
 def oaep_encode(input_bytes: bytes, r_bytes: bytes) -> bytes:
