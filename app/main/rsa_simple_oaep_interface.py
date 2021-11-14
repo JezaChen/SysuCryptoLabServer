@@ -1,4 +1,5 @@
 from flask import request, abort, jsonify
+from flask_cors import cross_origin
 
 from . import main
 from .rsa_simple_oaep import *
@@ -6,6 +7,7 @@ from .tools import hex_to_bytes, try_decode_utf8
 
 
 @main.route("/crypto/simple_oaep_encode")
+@cross_origin()
 def simple_oaep_encode():
     """
     参数：json
@@ -54,6 +56,7 @@ def simple_oaep_encode():
 
 
 @main.route("/crypto/simple_oaep_decode")
+@cross_origin()
 def simple_oaep_decode():
     """
     参数：json
@@ -90,6 +93,7 @@ def simple_oaep_decode():
 
 
 @main.route("/crypto/rsa2048_simple_oaep/enc")
+@cross_origin()
 def rsa_simple_oaep_enc():
     """
     参数：json
@@ -157,6 +161,7 @@ def rsa_simple_oaep_enc():
 
 
 @main.route("/crypto/rsa2048_simple_oaep/dec")
+@cross_origin()
 def rsa_simple_oaep_dec():
     """
     参数：json

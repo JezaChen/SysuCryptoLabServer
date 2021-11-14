@@ -1,11 +1,13 @@
 import sympy
 from flask import request, abort, jsonify, make_response
+from flask_cors import cross_origin
 
 from . import main
 from .tools import hex_to_dec_int, hex2
 
 
 @main.route('/crypto/next_prime')
+@cross_origin()
 def get_next_prime():
     """
     获得下一个素数
@@ -28,6 +30,7 @@ def get_next_prime():
 
 
 @main.route('/crypto/calculate_inverse')
+@cross_origin()
 def calculate_inverse():
     """
     求解num的模mod逆元
