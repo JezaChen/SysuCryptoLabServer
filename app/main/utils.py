@@ -22,7 +22,6 @@ def get_next_prime():
         num = int(num)
         rslt = sympy.nextprime(num)
         response = make_response(str(rslt))
-        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except TypeError:
         return "Bad Request", 400

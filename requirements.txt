@@ -3,3 +3,4 @@ redis
 PyYAML
 pytest
 sympy
+flask_cors
