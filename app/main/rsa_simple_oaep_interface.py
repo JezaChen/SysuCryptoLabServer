@@ -189,8 +189,8 @@ def rsa_simple_oaep_dec():
     # 合法性检查
     if cipher_bytes is None:
         return jsonify(success=False, reason="cipher_bytes解析错误，请检查cipher_bytes是否为合法的hex字符串")
-    if len(cipher_bytes) != 256:
-        return jsonify(success=False, reason="密文长度不等于256字节（2048bit）")
+    if len(cipher_bytes) > 256:
+        return jsonify(success=False, reason="密文长度大于256字节（2048bit）")
 
     n_bytes = hex_to_bytes(n_hex)
     d_bytes = hex_to_bytes(d_hex)
