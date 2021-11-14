@@ -4,3 +4,4 @@ PyYAML
 pytest
 sympy
 flask_cors
+gunicorn
