@@ -4,7 +4,7 @@ EXPOSE 5000
 # RUN apk add --update bash curl git && rm -rf /var/cache/apk/*
 
 COPY . /usr/src/app
-COPY /home/lighthouse/ssl/* /usr/src/app
+COPY /home/lighthouse/ssl/ /usr/src/app
 WORKDIR /usr/src/app
 
 RUN pip install -r requirements.txt
