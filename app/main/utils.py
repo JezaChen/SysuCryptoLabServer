@@ -23,8 +23,10 @@ def get_next_prime():
     try:
         num = int(num)
         rslt = sympy.nextprime(num)
-        response = make_response(str(rslt))
-        return response
+        result_dec = str(rslt)
+        result_hex = hex2(rslt)
+        return jsonify(success=True, result_dec=result_dec, result_hex=result_hex)
+
     except TypeError:
         return "Bad Request", 400
 
