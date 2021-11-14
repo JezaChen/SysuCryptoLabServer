@@ -44,5 +44,6 @@ jobs:
         KEY: ${{ secrets.SSHKEY }}
         script: |
           cd /home/lighthouse/SysuCryptoLabServer
+          cp /home/lighthouse/ssl/* /home/lighthouse/SysuCryptoLabServer
           git pull https://github.com/JezaChen/SysuCryptoLabServer.git
           docker-compose up --build -d
