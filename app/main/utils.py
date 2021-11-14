@@ -59,6 +59,8 @@ def calculate_inverse():
         num = int(num_str)
     else:  # hex
         num = hex_to_dec_int(num_str)
+        if num is None:
+            return "num解析错误，请检查num是否为合法的hex字符串", 400
 
     # 统一为处理mod为int
     if is_mod_dec == "1":
@@ -67,7 +69,8 @@ def calculate_inverse():
         mod = int(mod_str)
     else:  # hex
         mod = hex_to_dec_int(mod_str)
-
+        if mod is None:
+            return "mod解析错误，请检查mod是否为合法的hex字符串", 400
     try:
         result = pow(num, -1, mod)
         result_dec = str(result)
