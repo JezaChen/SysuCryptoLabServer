@@ -1,5 +1,5 @@
 import sympy
-from flask import request, abort, jsonify
+from flask import request, abort, jsonify, make_response
 
 from . import main
 from .tools import hex_to_dec_int, hex2
@@ -21,7 +21,9 @@ def get_next_prime():
     try:
         num = int(num)
         rslt = sympy.nextprime(num)
-        return str(rslt)
+        response = make_response(str(rslt))
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     except TypeError:
         return "Bad Request", 400
 
