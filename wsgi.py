@@ -1,10 +1,11 @@
-from flask_cors import CORS
-from app import create_app
 import os
 
-app = create_app()
-CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+import app_wrapper
+import database
+
+app = app_wrapper.app
+db = app_wrapper.db
+migrate = app_wrapper.migrate
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
