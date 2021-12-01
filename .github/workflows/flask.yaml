@@ -26,7 +26,7 @@ jobs:
     # 建立環境
     - name: Install Dependencies
       run: |
-        apt install -y build-essential
+        sudo apt install -y build-essential
         python -m pip install --upgrade pip
         pip install -r ./requirements.txt
 
