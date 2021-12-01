@@ -6,5 +6,6 @@ EXPOSE 5000
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
+RUN apt-get update && apt-get install build-essential -y
 RUN pip install -r requirements.txt
 CMD gunicorn --certfile=server.crt --keyfile=server.key --workers=4 -b 0.0.0.0:5000 wsgi:app
