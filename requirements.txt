@@ -5,6 +5,5 @@ pytest
 sympy
 flask_cors
 gunicorn
-psycopg2-binary
 flask_sqlalchemy
 flask_migrate
