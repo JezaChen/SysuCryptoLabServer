@@ -45,6 +45,6 @@ jobs:
         script: |
           cd /home/lighthouse/SysuCryptoLabServer
           cp /home/lighthouse/ssl/* /home/lighthouse/SysuCryptoLabServer
-          cp /home/lighthouse/secrets.py /home/lighthouse/SysuCryptoLabServer/server_secrets.py
+          cp /home/lighthouse/server_secrets.py /home/lighthouse/SysuCryptoLabServer/
           git pull https://github.com/JezaChen/SysuCryptoLabServer.git
           docker-compose up --build -d
