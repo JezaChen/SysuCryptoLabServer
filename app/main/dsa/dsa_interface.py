@@ -91,7 +91,7 @@ def generate_dsa_params():
         q_hex = hex2(q)
         g_hex = hex2(g)
         # 课本中alpha是g
-        return jsonify(success=True, p=p, q=q, alpha=g, p_hex=p_hex, q_hex=q_hex, alpha_hex=g_hex)
+        return jsonify(success=True, p=str(p), q=str(q), alpha=str(g), p_hex=p_hex, q_hex=q_hex, alpha_hex=g_hex)
     except Exception as e:
         return jsonify(success=False, reason=str(e))
 
@@ -131,7 +131,7 @@ def dsa_sign():
     r_dec, s_dec = sign(p, q, alpha, a, msg_bytes, k)
     r_hex = hex2(r_dec)
     s_hex = hex2(s_dec)
-    return jsonify(success=True, gamma=r_dec, delta=s_dec, gamma_hex=r_hex, delta_hex=s_hex)
+    return jsonify(success=True, gamma=str(r_dec), delta=str(s_dec), gamma_hex=r_hex, delta_hex=s_hex)
 
 
 @main.route('/crypto/dsa/verify', methods=["POST"])
