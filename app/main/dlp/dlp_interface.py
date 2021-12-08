@@ -7,8 +7,6 @@ from app.main import main
 from app.main.tools import hex2
 from server_secrets import LAB_COMPUTER_TOKEN
 
-LAST_ECHO_TIME = 0
-
 
 @main.route('/crypto/pow_mod', methods=["POST"])
 @cross_origin()
@@ -146,9 +144,6 @@ def pick_task():
     # FOR DATABASE
     from database.models import Task
 
-    global LAST_ECHO_TIME
-    LAST_ECHO_TIME = time.time()
-
     task = Task.query.filter(Task.finished == False).first()
     if task:
         return jsonify(success=True,
@@ -180,9 +175,6 @@ def publish_result():
     # FOR DATABASE
     from database.models import Task
     from app_wrapper import db
-
-    global LAST_ECHO_TIME
-    LAST_ECHO_TIME = time.time()
 
     task_id = request.form.get('task_id')
 
@@ -240,8 +232,6 @@ def current_status():
     # FOR DATABASE
     from database.models import Task
 
-    global LAST_ECHO_TIME
-
     task_count = Task.query.count()
     not_finished_count = Task.query.filter(Task.finished == False).count()
     current_operating_task = Task.query.filter(Task.finished == False).first()
@@ -252,5 +242,4 @@ def current_status():
     return jsonify(success=True,
                    task_count=task_count,
                    not_finished_count=not_finished_count,
-                   current_operating_task_id=current_operating_task_id,
-                   last_echo_time=LAST_ECHO_TIME)
+                   current_operating_task_id=current_operating_task_id)
