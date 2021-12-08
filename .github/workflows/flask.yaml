@@ -23,11 +23,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    # 建立環境
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r ./requirements.txt
+#    # 建立環境
+#    - name: Install Dependencies
+#      run: |
+#        python -m pip install --upgrade pip
+#        pip install -r ./requirements.txt
 
 #    # 運行測試
 #    - name: Run Tests
@@ -45,6 +45,6 @@ jobs:
         script: |
           cd /home/lighthouse/SysuCryptoLabServer
           cp /home/lighthouse/ssl/* /home/lighthouse/SysuCryptoLabServer
-          cp /home/lighthouse/secrets.py /home/lighthouse/SysuCryptoLabServer
+          cp /home/lighthouse/secrets.py /home/lighthouse/SysuCryptoLabServer/server_secrets.py
           git pull https://github.com/JezaChen/SysuCryptoLabServer.git
           docker-compose up --build -d

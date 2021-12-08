@@ -5,7 +5,7 @@ from flask_cors import cross_origin
 
 from app.main import main
 from app.main.tools import hex2
-from secrets import LAB_COMPUTER_TOKEN
+from server_secrets import LAB_COMPUTER_TOKEN
 
 LAST_ECHO_TIME = 0
 

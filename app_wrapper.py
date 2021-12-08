@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
 from flask_migrate import Migrate
-from secrets import POSTGRESQL_URL
+from server_secrets import POSTGRESQL_URL
 
 app = create_app()
 CORS(app)
