@@ -78,12 +78,14 @@ def publish_task():
                        result=task.result,
                        task_success=task.success)
 
-    new_task = Task(g=g)
-    db.session.add(new_task)
-    db.session.commit()
-    return jsonify(success=True,
-                   new_task=True,
-                   task_id=new_task.id)
+    # 实验已经结束, 不能再发布新任务
+    return jsonify(success=False, reason="DLP实验已经结束, 为了节省计算资源, cado-nfs计算功能已经关闭!")
+    # new_task = Task(g=g)
+    # db.session.add(new_task)
+    # db.session.commit()
+    # return jsonify(success=True,
+    #                new_task=True,
+    #                task_id=new_task.id)
 
 
 @main.route('/crypto/dlp/get_task', methods=["GET"])
