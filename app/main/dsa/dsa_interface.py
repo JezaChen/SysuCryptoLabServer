@@ -1,3 +1,4 @@
+import hashlib
 from typing import Union
 
 from flask import request, jsonify
@@ -5,6 +6,7 @@ from flask_cors import cross_origin
 
 from app.main import main
 from app.main.dsa.core import generate_params, sign, verify
+from app.main.dsa.hack_dsa import hack_core
 from app.main.tools import hex2, hex_to_bytes
 
 
@@ -79,6 +81,23 @@ def convert_all_data_dict_to_int(post_json: dict, *data_names) -> list:
             raise ValueError("必填参数{}为空, 请检查".format(name))
 
         result.append(IntConverter.convert(data_value, data_type, name))
+    return result
+
+
+def convert_all_data_dict_to_bytes(post_json: dict, *data_names) -> list:
+    result = []
+    for name in data_names:
+        if name not in post_json:
+            raise ValueError("必填参数{}为空, 请检查".format(name))
+        data_dict = post_json.get(name)
+
+        data_type = data_dict.get("type", "utf8")
+        data_value = data_dict.get("value")  # str
+
+        if data_value is None:
+            raise ValueError("必填参数{}为空, 请检查".format(name))
+
+        result.append(BytesConverter.convert(data_value, data_type, name))
     return result
 
 
@@ -158,3 +177,30 @@ def dsa_verify():
     result = verify(p, q, alpha, beta, msg_bytes, (r, s))
 
     return jsonify(success=True, verify_result=result)
+
+
+@main.route('/crypto/dsa/hack_same_k', methods=['POST'])
+@cross_origin()
+def hack_same_k():
+    post_data = request.get_json()
+    try:
+        q, delta1, gamma1, delta2, gamma2 = convert_all_data_dict_to_int(post_data, "q", "delta1", "gamma1", "delta2",
+                                                                         "gamma2")
+        if gamma1 != gamma2:
+            return jsonify(success=False, reason="gamma1不等于gamma2, 意味着k不一样, 无法破解")
+        msg1_bytes, msg2_bytes = convert_all_data_dict_to_bytes(post_data, "msg1", "msg2")
+        msg1_digest = int.from_bytes(hashlib.sha256(msg1_bytes).digest(), "big")
+        msg2_digest = int.from_bytes(hashlib.sha256(msg2_bytes).digest(), "big")
+        result = hack_core(delta1, gamma1, msg1_digest, delta2, gamma2, msg2_digest, q)
+        if result is None:
+            return jsonify(success=False, reason="破解失败, 请检查参数")
+        k_dec, private_key_dec = result
+        k_hex, private_key_hex = hex2(k_dec), hex2(private_key_dec)
+        return jsonify(success=True,
+                       k=str(k_dec),
+                       private_key=str(private_key_dec),
+                       k_hex=k_hex,
+                       private_key_hex=private_key_hex)
+
+    except Exception as e:
+        return jsonify(success=False, reason=str(e))
