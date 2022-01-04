@@ -29,7 +29,7 @@ def check_result():
 
     try:
         seed = int(seed)
-        result, _ = tiny_random_generator(seed)
+        result, _, _ = tiny_random_generator(seed)
         return jsonify(success=True, matched=(result == bits))
     except Exception as e:
         return jsonify(success=False, reason="程序内部错误:{}".format(e))
