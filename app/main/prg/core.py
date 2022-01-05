@@ -20,7 +20,7 @@ def tiny_random_generator(seed,
         z_str += str(si & 1)
         z_int += (si & 1)
         if detailed:
-            detailed_output.append((i + 1, si, si & 1))
+            detailed_output.append((i + 1, str(si), si & 1))
 
     return z_str, z_int, detailed_output
 
