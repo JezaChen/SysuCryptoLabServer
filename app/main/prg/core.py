@@ -11,7 +11,7 @@ def tiny_random_generator(seed,
     z_int = 0
     detailed_output = []
     if detailed:
-        detailed_output.append((0, seed))
+        detailed_output.append((0, str(seed)))
 
     for i in range(output_len):
         z_int <<= 1
