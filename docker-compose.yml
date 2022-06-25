@@ -5,6 +5,6 @@ web:
   links:
     - redis
   ports:
-    - "443:5000"
+    - "9090:5000"
 redis:
   image: redis
