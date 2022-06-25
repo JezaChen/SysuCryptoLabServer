@@ -11,4 +11,4 @@ RUN apk add build-base
 RUN apk add libffi-dev
 RUN apk add openssl
 RUN pip install -r requirements.txt
-CMD gunicorn --certfile=server.crt --keyfile=server.key --workers=4 -b 0.0.0.0:5000 wsgi:app
+CMD gunicorn --workers=4 -b 0.0.0.0:5000 wsgi:app
